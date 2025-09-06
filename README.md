@@ -1,6 +1,6 @@
 # Chop Chop Boost
 
-Turn your goals into a Pokémon-style Trading Card Game! Define your 'Series', collect themed 'Boosters' for each milestone, and reveal powerful 'Cards' to master new skills.
+Turn your goals into a Pokémon-style Trading Card Game! Define your 'Series', collect themed 'Boosters' for each milestone, and reveal powerful 'Cards' to master new skills. Test
 
 ## Project Structure
 
