@@ -7,7 +7,7 @@ import CardViewerView from './components/CardViewerView';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 
-const API_BASE_URL = 'http://localhost:3001'; // Hardcode for now
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:3001' : '');
 
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
