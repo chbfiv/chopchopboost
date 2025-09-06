@@ -110,7 +110,20 @@ const parseTasksFromParts = (parts: Part[]): Task[] => {
             const text = part.text.trim();
             const titleMatch = text.match(/Title:([\s\S]*?)(?=Details:|$)/);
             if (titleMatch && titleMatch[1]) {
-                currentTask.title = titleMatch[1].trim().replace(/^Card:\s*/, '');
+                // If we already have a task with an image but no title, use this title for it
+                if (currentTask.imageUrl && !currentTask.title) {
+                    currentTask.title = titleMatch[1].trim().replace(/^Card:\s*/, '');
+                } else {
+                    // Push previous task if it has both title/details and image
+                    if (currentTask.title && currentTask.details && currentTask.details.length > 0 && currentTask.imageUrl) {
+                        tasks.push(currentTask as Task);
+                        currentTask = {};
+                    }
+                    // Start new task
+                    if (!currentTask.title) {
+                        currentTask.title = titleMatch[1].trim().replace(/^Card:\s*/, '');
+                    }
+                }
             }
 
             const detailsMatch = text.match(/Details:([\s\S]*)/);
@@ -122,13 +135,34 @@ const parseTasksFromParts = (parts: Part[]): Task[] => {
                     .filter(d => d);
             }
         } else if (part.inlineData) {
-            currentTask.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            // If we have a current task with title, assign image to it
+            if (currentTask.title) {
+                currentTask.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            } else {
+                // If no current task, this might be an image that came before text
+                currentTask.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+            }
         }
 
+        // Accept task if it has title, details, and image
         if (currentTask.title && currentTask.details && currentTask.details.length > 0 && currentTask.imageUrl) {
             tasks.push(currentTask as Task);
             currentTask = {};
         }
+    }
+
+    // Handle any remaining task
+    if (currentTask.title || currentTask.imageUrl) {
+        if (!currentTask.title) {
+            currentTask.title = 'Untitled Task';
+        }
+        if (!currentTask.details || currentTask.details.length === 0) {
+            currentTask.details = ['No details provided'];
+        }
+        if (!currentTask.imageUrl) {
+            currentTask.imageUrl = '';
+        }
+        tasks.push(currentTask as Task);
     }
 
     if (tasks.length === 0) {

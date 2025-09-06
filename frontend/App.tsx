@@ -48,14 +48,9 @@ function App() {
       }
       const generatedPlan = await response.json();
       setMilestones(generatedPlan);
-      // Try to extract a concise series name from the first milestone title
-      if (generatedPlan && generatedPlan.length > 0 && generatedPlan[0].title) {
-        // Use the first milestone title as the series name, or a substring of it
-        setSeriesName(generatedPlan[0].title.split(':')[1]?.trim() || generatedPlan[0].title.trim());
-      } else {
-        setSeriesName('Series');
-      }
+      setSeriesName(generatedPlan[0].title.split(':')[1]?.trim() || generatedPlan[0].title.trim());
       setCurrentView('series');
+      setBoosterIndex(0);
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");

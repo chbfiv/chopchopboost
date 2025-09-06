@@ -96,28 +96,57 @@ const parseMilestonesFromParts = (parts) => {
       lastText = text;
       const titleMatch = text.match(/Title:([\s\S]*?)(?=Description:|$)/);
       if (titleMatch && titleMatch[1]) {
-        currentMilestone.title = titleMatch[1].trim();
+        // If we already have a milestone with an image but no title, use this title for it
+        if (currentMilestone.imageUrl && !currentMilestone.title) {
+          currentMilestone.title = titleMatch[1].trim();
+        } else {
+          // Push previous milestone if it has both title and image
+          if (currentMilestone.title && currentMilestone.imageUrl) {
+            milestones.push(currentMilestone);
+            currentMilestone = {};
+          }
+          // Start new milestone
+          if (!currentMilestone.title) {
+            currentMilestone.title = titleMatch[1].trim();
+          }
+        }
       }
       const descriptionMatch = text.match(/Description:([\s\S]*)/);
       if (descriptionMatch && descriptionMatch[1]) {
         currentMilestone.description = descriptionMatch[1].trim();
       }
     } else if (part.inlineData) {
-      currentMilestone.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      // If we have a current milestone with title, assign image to it
+      if (currentMilestone.title) {
+        currentMilestone.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      } else {
+        // If no current milestone, this might be an image that came before text
+        currentMilestone.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      }
     }
 
-    // Accept milestone if it has a title; warn if missing image/description
-    if (currentMilestone.title) {
+    // Accept milestone if it has both title and image
+    if (currentMilestone.title && currentMilestone.imageUrl) {
       if (!currentMilestone.description) {
         currentMilestone.description = '(No description provided)';
-      }
-      if (!currentMilestone.imageUrl) {
-        console.warn('Booster missing image:', currentMilestone.title);
-        currentMilestone.imageUrl = '';
       }
       milestones.push(currentMilestone);
       currentMilestone = {};
     }
+  }
+
+  // Handle any remaining milestone
+  if (currentMilestone.title || currentMilestone.imageUrl) {
+    if (!currentMilestone.title) {
+      currentMilestone.title = 'Untitled Milestone';
+    }
+    if (!currentMilestone.description) {
+      currentMilestone.description = '(No description provided)';
+    }
+    if (!currentMilestone.imageUrl) {
+      currentMilestone.imageUrl = '';
+    }
+    milestones.push(currentMilestone);
   }
 
   if (milestones.length === 0) {
@@ -144,7 +173,20 @@ const parseTasksFromParts = (parts) => {
       const text = part.text.trim();
       const titleMatch = text.match(/Title:([\s\S]*?)(?=Details:|$)/);
       if (titleMatch && titleMatch[1]) {
-        currentTask.title = titleMatch[1].trim().replace(/^Card:\s*/, '');
+        // If we already have a task with an image but no title, use this title for it
+        if (currentTask.imageUrl && !currentTask.title) {
+          currentTask.title = titleMatch[1].trim().replace(/^Card:\s*/, '');
+        } else {
+          // Push previous task if it has both title/details and image
+          if (currentTask.title && currentTask.details && currentTask.details.length > 0 && currentTask.imageUrl) {
+            tasks.push(currentTask);
+            currentTask = {};
+          }
+          // Start new task
+          if (!currentTask.title) {
+            currentTask.title = titleMatch[1].trim().replace(/^Card:\s*/, '');
+          }
+        }
       }
 
       const detailsMatch = text.match(/Details:([\s\S]*)/);
@@ -156,13 +198,34 @@ const parseTasksFromParts = (parts) => {
           .filter(d => d);
       }
     } else if (part.inlineData) {
-      currentTask.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      // If we have a current task with title, assign image to it
+      if (currentTask.title) {
+        currentTask.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      } else {
+        // If no current task, this might be an image that came before text
+        currentTask.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+      }
     }
 
+    // Accept task if it has title, details, and image
     if (currentTask.title && currentTask.details && currentTask.details.length > 0 && currentTask.imageUrl) {
       tasks.push(currentTask);
       currentTask = {};
     }
+  }
+
+  // Handle any remaining task
+  if (currentTask.title || currentTask.imageUrl) {
+    if (!currentTask.title) {
+      currentTask.title = 'Untitled Task';
+    }
+    if (!currentTask.details || currentTask.details.length === 0) {
+      currentTask.details = ['No details provided'];
+    }
+    if (!currentTask.imageUrl) {
+      currentTask.imageUrl = '';
+    }
+    tasks.push(currentTask);
   }
 
   if (tasks.length === 0) {
