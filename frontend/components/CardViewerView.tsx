@@ -10,10 +10,11 @@ interface CardViewerViewProps {
   onComplete: (index: number) => void;
   isLoadingTasks: boolean;
   error: string | null;
+  currentCardIndex: number;
+  onCardIndexChange: (index: number) => void;
 }
 
-const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneIndex, onBack, onComplete, isLoadingTasks, error }) => {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneIndex, onBack, onComplete, isLoadingTasks, error, currentCardIndex, onCardIndexChange }) => {
   const [isHeroRevealed, setIsHeroRevealed] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -32,12 +33,20 @@ const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneInd
         const cardWidth = container.offsetWidth;
         const newIndex = Math.round(scrollLeft / cardWidth);
         if (newIndex !== currentCardIndex) {
-            setCurrentCardIndex(newIndex);
+            onCardIndexChange(newIndex);
         }
     };
     
     container.addEventListener('scroll', handleScroll, { passive: true });
     return () => container.removeEventListener('scroll', handleScroll);
+  }, [currentCardIndex, onCardIndexChange]);
+
+  // Update scroll on index change
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const cardWidth = container.offsetWidth;
+    container.scrollLeft = currentCardIndex * cardWidth;
   }, [currentCardIndex]);
 
   if (isHeroRevealed) {
@@ -46,19 +55,7 @@ const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneInd
   
   return (
     <div className="w-full h-full max-w-md mx-auto flex flex-col animate-fade-in">
-      {/* Header */}
-      <div className="mb-4">
-         <div className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-            <span onClick={onBack} className="hover:text-pk-blue cursor-pointer transition-colors">
-                My Series
-            </span>
-            <span className="mx-2">/</span>
-            <span className="text-slate-800 dark:text-slate-200">{milestone.title}</span>
-        </div>
-        <p className="text-slate-600 dark:text-slate-400 mt-1">
-            Swipe through your Cards!
-        </p>
-      </div>
+      {/* Header removed, using TopBar breadcrumbs */}
 
       {isLoadingTasks && (
          <div className="flex flex-col items-center justify-center text-center p-8 flex-grow">
@@ -87,9 +84,6 @@ const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneInd
         
         {/* Progress & Navigation */}
         <div className="flex flex-col items-center mt-4">
-            <p className="font-bold text-slate-700 dark:text-slate-300">
-                Card {currentCardIndex + 1} of {milestone.tasks.length}
-            </p>
             {currentCardIndex === milestone.tasks.length - 1 ? (
                 <button 
                     onClick={handleRevealHero}
@@ -97,9 +91,7 @@ const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneInd
                 >
                     Reveal Holo Card!
                 </button>
-            ) : (
-                <p className="text-sm text-slate-500 mt-1">Swipe to continue</p>
-            )}
+            ) : null}
         </div>
         </>
       )}

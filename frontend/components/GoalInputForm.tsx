@@ -45,8 +45,8 @@ const GoalInputForm: React.FC<GoalInputFormProps> = ({ onGeneratePlan, isLoading
                 <div className="h-40 bg-pk-blue p-4 flex flex-col items-center justify-center text-center text-white relative overflow-hidden">
                     <div className="absolute -bottom-10 -right-8 w-32 h-32 bg-white/20 rounded-full"></div>
                     <div className="absolute -top-4 -left-12 w-24 h-24 bg-white/20 rounded-full"></div>
-                    <h2 className="text-2xl font-bold z-10">CREATE YOUR SERIES</h2>
-                    <p className="text-sm font-semibold mt-1 z-10">What great challenge will you conquer?</p>
+                    <h2 className="text-2xl font-bold z-10">Chop Chop Boost!</h2>
+                    <p className="text-sm font-semibold mt-1 z-10">What do you want to conquer?</p>
                 </div>
 
                 {/* Form Section */}

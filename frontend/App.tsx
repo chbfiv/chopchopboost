@@ -14,10 +14,12 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [milestones, setMilestones] = useState<Milestone[] | null>(null);
   const [goalPrompt, setGoalPrompt] = useState<string>('');
+  const [seriesName, setSeriesName] = useState<string>('');
   const [selectedMilestoneIndex, setSelectedMilestoneIndex] = useState<number | null>(null);
   const [isFetchingTasks, setIsFetchingTasks] = useState<boolean>(false);
   const [currentView, setCurrentView] = useState<'home' | 'series' | 'milestone'>('home');
   const [boosterIndex, setBoosterIndex] = useState<number>(0);
+  const [currentCardIndex, setCurrentCardIndex] = useState<number>(0);
 
   const handleGeneratePlan = useCallback(async (prompt: string, imageFile: File | null) => {
     if (!prompt.trim()) {
@@ -29,6 +31,7 @@ function App() {
     setError(null);
     setMilestones(null);
     setGoalPrompt(prompt);
+    setSeriesName(prompt.replace(/^Make\s+/i, '').split(' ')[0] + ' Heaven');
 
     try {
       const formData = new FormData();
@@ -62,6 +65,7 @@ function App() {
 
     setSelectedMilestoneIndex(index);
     setCurrentView('milestone');
+    setCurrentCardIndex(0);
 
     if (selectedMilestone.tasks) {
       return;
@@ -117,19 +121,21 @@ function App() {
     setError(null);
     setMilestones(null);
     setGoalPrompt('');
+    setSeriesName('');
     setSelectedMilestoneIndex(null);
     setIsFetchingTasks(false);
     setCurrentView('home');
     setBoosterIndex(0);
+    setCurrentCardIndex(0);
   };
 
   const getBreadcrumbs = () => {
     const crumbs = ['Home'];
     if (currentView === 'series') {
-      crumbs.push('Series');
+      crumbs.push(seriesName || 'Series');
     } else if (currentView === 'milestone' && selectedMilestoneIndex !== null && milestones) {
-      crumbs.push('Series');
-      crumbs.push(`Milestone ${selectedMilestoneIndex + 1}`);
+      crumbs.push(seriesName || 'Series');
+      crumbs.push(milestones[selectedMilestoneIndex].title);
     }
     return crumbs;
   };
@@ -137,19 +143,35 @@ function App() {
   const handleNavigateLeft = () => {
     if (currentView === 'series' && milestones) {
       setBoosterIndex(prev => Math.max(0, prev - 1));
-    } else if (currentView === 'milestone') {
-      // Navigate to previous task/card
-      // This would need to be implemented in CardViewerView
+    } else if (currentView === 'milestone' && milestones && selectedMilestoneIndex !== null) {
+      const selectedMilestone = milestones[selectedMilestoneIndex];
+      if (selectedMilestone.tasks) {
+        setCurrentCardIndex(prev => Math.max(0, prev - 1));
+      }
     }
   };
 
   const handleNavigateRight = () => {
     if (currentView === 'series' && milestones) {
       setBoosterIndex(prev => Math.min(milestones.length - 1, prev + 1));
-    } else if (currentView === 'milestone') {
-      // Navigate to next task/card
-      // This would need to be implemented in CardViewerView
+    } else if (currentView === 'milestone' && milestones && selectedMilestoneIndex !== null) {
+      const selectedMilestone = milestones[selectedMilestoneIndex];
+      if (selectedMilestone.tasks) {
+        setCurrentCardIndex(prev => Math.min(selectedMilestone.tasks.length - 1, prev + 1));
+      }
     }
+  };
+
+  const handleBreadcrumbClick = (index: number) => {
+    if (index === 0) {
+      // Home
+      handleStartOver();
+    } else if (index === 1 && currentView === 'milestone') {
+      // Series
+      setSelectedMilestoneIndex(null);
+      setCurrentView('series');
+    }
+    // For series view, clicking Series does nothing
   };
 
   const renderContent = () => {
@@ -164,6 +186,8 @@ function App() {
           onComplete={handleMilestoneComplete}
           isLoadingTasks={isFetchingTasks}
           error={error}
+          currentCardIndex={currentCardIndex}
+          onCardIndexChange={setCurrentCardIndex}
         />
       );
     }
@@ -186,10 +210,17 @@ function App() {
       <TopBar
         onCreateNewSeries={currentView !== 'home' ? handleStartOver : undefined}
         breadcrumbs={getBreadcrumbs()}
-        onNavigateLeft={currentView === 'series' ? handleNavigateLeft : undefined}
-        onNavigateRight={currentView === 'series' ? handleNavigateRight : undefined}
-        showNavigation={currentView === 'series'}
-        currentPosition={currentView === 'series' && milestones ? `${boosterIndex + 1}/${milestones.length}` : undefined}
+        onNavigateLeft={handleNavigateLeft}
+        onNavigateRight={handleNavigateRight}
+        showNavigation={currentView === 'series' || currentView === 'milestone'}
+        currentPosition={
+          currentView === 'series' && milestones ? `${boosterIndex + 1}/${milestones.length}` :
+          currentView === 'milestone' && milestones && selectedMilestoneIndex !== null && milestones[selectedMilestoneIndex].tasks ? 
+            `${currentCardIndex + 1}/${milestones[selectedMilestoneIndex].tasks!.length}` : 
+            undefined
+        }
+        currentView={currentView}
+        onBreadcrumbClick={handleBreadcrumbClick}
       />
       <main className="w-full max-w-4xl flex-grow flex flex-col items-center justify-center py-8">
         {renderContent()}
