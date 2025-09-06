@@ -84,7 +84,7 @@ const BoosterPackCard: React.FC<BoosterPackCardProps> = ({ milestone, index, cur
         onMouseMove={handleMouseMove}
         onKeyPress={handleKeyPress}
         className={`w-full h-full rounded-2xl shadow-xl overflow-hidden relative group transition-all duration-300
-          ${isCurrent ? (milestone.isCompleted ? 'cursor-default' : 'hover:shadow-2xl hover:border-pk-yellow dark:hover:border-pk-yellow') : 'cursor-default opacity-80'}
+          ${isCurrent ? (milestone.isCompleted ? 'cursor-default' : 'hover:shadow-2xl') : 'cursor-default opacity-80'}
           ${milestone.isCompleted ? 'grayscale' : ''}
         `}
         role="button"
@@ -92,13 +92,8 @@ const BoosterPackCard: React.FC<BoosterPackCardProps> = ({ milestone, index, cur
         aria-label={`Booster: ${milestone.title}${milestone.isCompleted ? ' (Collected)' : ''}`}
         aria-disabled={!isCurrent || milestone.isCompleted}
       >
-    <div className="absolute inset-0 w-full h-full bg-pk-yellow z-0" />
-    <img src={milestone.imageUrl} alt={milestone.title} className="relative z-10 w-full h-full object-contain" style={{backgroundColor: 'transparent'}} />
+        <img src={milestone.imageUrl} alt={milestone.title} className="relative z-10 w-full h-full object-contain" style={{backgroundColor: 'transparent'}} />
         <div className="holo-shine"></div>
-        
-        {milestone.isCompleted && (
-           <div className="absolute top-3 right-3 font-bold text-xs text-pk-blue bg-pk-yellow rounded-full px-3 py-1 drop-shadow-lg border-2 border-pk-blue">COLLECTED</div>
-        )}
       </div>
     </div>
   );
