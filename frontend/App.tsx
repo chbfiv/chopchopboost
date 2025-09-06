@@ -1,12 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { Milestone } from './types';
-import { generateMilestonesPlan, generateTasksForMilestone } from './services/geminiService';
 import GoalInputForm from './components/GoalInputForm';
 import LoadingView from './components/LoadingView';
 import BoosterPackList from './components/BoosterPackList';
 import CardViewerView from './components/CardViewerView';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
+
+const API_BASE_URL = 'http://localhost:3001'; // Hardcode for now
 
 function App() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -28,7 +29,19 @@ function App() {
     setGoalPrompt(prompt);
 
     try {
-      const generatedPlan = await generateMilestonesPlan(prompt, imageFile);
+      const formData = new FormData();
+      formData.append('prompt', prompt);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+      const response = await fetch(`${API_BASE_URL}/api/generate-milestones`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error('Failed to generate plan');
+      }
+      const generatedPlan = await response.json();
       setMilestones(generatedPlan);
     } catch (err) {
       console.error(err);
@@ -53,7 +66,17 @@ function App() {
     setIsFetchingTasks(true);
     setError(null);
     try {
-      const tasks = await generateTasksForMilestone(selectedMilestone, goalPrompt);
+      const response = await fetch(`${API_BASE_URL}/api/generate-tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ milestone: selectedMilestone, seriesTheme: goalPrompt }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to generate tasks');
+      }
+      const tasks = await response.json();
       setMilestones(prevMilestones => {
         if (!prevMilestones) return null;
         const newMilestones = [...prevMilestones];

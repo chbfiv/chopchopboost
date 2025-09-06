@@ -1,20 +1,90 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Chop Chop Boost
 
-# Run and deploy your AI Studio app
+Turn your goals into a Pokémon-style Trading Card Game! Define your 'Series', collect themed 'Boosters' for each milestone, and reveal powerful 'Cards' to master new skills.
 
-This contains everything you need to run your app locally.
+## Project Structure
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Cnxctt75tm58ddxp4rjKYAg0S4os5Xnp
+```
+/
+├── frontend/          # React + TypeScript frontend
+├── backend/           # Node.js + Express backend
+├── Dockerfile         # Docker container
+├── .github/workflows/ # CI/CD pipeline
+├── PLAN.md            # Development plan
+└── README.md
+```
 
-## Run Locally
+## Local Development
 
-**Prerequisites:**  Node.js
+### Prerequisites
+- Node.js 18+
+- Google Gemini API key
 
+### Setup
+1. Clone the repository
+2. Set up environment variables:
+   - Copy `.env.local` to `frontend/.env.local` and set `VITE_API_BASE_URL=http://localhost:3001`
+   - Set `API_KEY` in backend environment
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+4. Install backend dependencies:
+   ```bash
+   cd backend
+   npm install
+   ```
+
+5. Run backend:
+   ```bash
+   cd backend
+   npm run dev
+   ```
+
+6. Run frontend (in new terminal):
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+7. Open http://localhost:5173
+
+## Docker Development
+
+Build and run with Docker:
+```bash
+docker build -t chopchopboost .
+docker run -p 3001:3001 -e API_KEY=your_api_key chopchopboost
+```
+
+## Deployment
+
+The app is configured for deployment to Google Cloud Run via GitHub Actions.
+
+### Setup
+1. Create a GCP project
+2. Enable Cloud Run and Container Registry APIs
+3. Create a service account with necessary permissions
+4. Add secrets to GitHub repository:
+   - `GCP_SA_KEY`: Service account JSON key
+   - `GCP_PROJECT_ID`: Your GCP project ID
+   - `API_KEY`: Google Gemini API key
+
+### Deploy
+Push to the `main` branch to trigger automatic deployment.
+
+## Features
+- AI-powered goal breakdown
+- Interactive TCG-style interface
+- Milestone and task generation
+- Image upload support
+- Responsive design
+
+## Tech Stack
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS
+- **Backend**: Node.js, Express
+- **AI**: Google Gemini
+- **Deployment**: Docker, Google Cloud Run
