@@ -21,7 +21,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 
 // Serve static files from frontend dist
 app.use(express.static(path.join(__dirname, '../frontend/dist')));
