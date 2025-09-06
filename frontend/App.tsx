@@ -27,11 +27,11 @@ function App() {
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
-    setMilestones(null);
-    setGoalPrompt(prompt);
-    setSeriesName(prompt.replace(/^Make\s+/i, '').split(' ')[0] + ' Heaven');
+  setIsLoading(true);
+  setError(null);
+  setMilestones(null);
+  setGoalPrompt(prompt);
+  setSeriesName(''); // Series name will be set from GenAI response
 
     try {
       const formData = new FormData();
@@ -48,6 +48,13 @@ function App() {
       }
       const generatedPlan = await response.json();
       setMilestones(generatedPlan);
+      // Try to extract a concise series name from the first milestone title
+      if (generatedPlan && generatedPlan.length > 0 && generatedPlan[0].title) {
+        // Use the first milestone title as the series name, or a substring of it
+        setSeriesName(generatedPlan[0].title.split(':')[1]?.trim() || generatedPlan[0].title.trim());
+      } else {
+        setSeriesName('Series');
+      }
       setCurrentView('series');
     } catch (err) {
       console.error(err);

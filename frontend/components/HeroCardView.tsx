@@ -43,7 +43,7 @@ const HeroCardView: React.FC<HeroCardViewProps> = ({ milestone, onBack }) => {
     {/* The Card Only */}
     <div className="w-full max-w-sm aspect-[5/7] rounded-2xl shadow-2xl border-4 border-pk-yellow p-2 flex flex-col overflow-hidden relative holo-effect">
       <div className="relative z-10 w-full h-full bg-white dark:bg-slate-800 rounded-lg p-3 flex flex-col">
-        <div className="w-full aspect-video rounded-lg overflow-hidden border-2 border-pk-blue/50 dark:border-pk-yellow/50">
+        <div className="w-full aspect-video rounded-lg overflow-hidden border-2 border-pk-blue/50 dark:border-pk-yellow/50" style={{background: 'rgb(15 23 42)'}}>
           <img className="w-full h-full object-cover" src={milestone.imageUrl} alt={milestone.title} />
         </div>
         <div className="text-center my-3">

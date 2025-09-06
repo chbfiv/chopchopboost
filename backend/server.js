@@ -46,7 +46,10 @@ For EACH of the 3 Boosters:
 2.  Provide a concise, thematic description of what's inside, starting with "Description:".
 3.  Generate vibrant, exciting wrapper art for the Booster. The art should look like a real TCG booster pack with minimal to no text. Use a solid black or white background so that the frontend can mask it out for transparency.
 
-Structure your response by alternating between text descriptions (Title and Description) and the corresponding generated image for each Booster.
+IMPORTANT: For each Booster, respond with:
+1. A text block starting with "Title:" and "Description:" (e.g., Title: The Meringue Ascent\nDescription: ...).
+2. An image block (base64 PNG/JPEG) for the booster art.
+Alternate these for all 3 boosters. Do not include extra text or explanations.
   `;
 
   const parts = [];
@@ -103,10 +106,14 @@ const parseMilestonesFromParts = (parts) => {
       currentMilestone.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
     }
 
-    // Accept milestone if it has title and imageUrl, even if description is missing
-    if (currentMilestone.title && currentMilestone.imageUrl) {
+    // Accept milestone if it has a title; warn if missing image/description
+    if (currentMilestone.title) {
       if (!currentMilestone.description) {
         currentMilestone.description = '(No description provided)';
+      }
+      if (!currentMilestone.imageUrl) {
+        console.warn('Booster missing image:', currentMilestone.title);
+        currentMilestone.imageUrl = '';
       }
       milestones.push(currentMilestone);
       currentMilestone = {};
