@@ -75,7 +75,7 @@ const BoosterPackCard: React.FC<BoosterPackCardProps> = ({ milestone, index, cur
 
   return (
     <div
-      className="absolute w-full h-full max-w-sm aspect-[3/4.2] transition-all duration-300 ease-out"
+      className="absolute w-full h-full max-w-sm aspect-[5/7] transition-all duration-300 ease-out"
       style={cardStyle}
       onClick={handleSelect}
     >
@@ -92,7 +92,8 @@ const BoosterPackCard: React.FC<BoosterPackCardProps> = ({ milestone, index, cur
         aria-label={`Booster: ${milestone.title}${milestone.isCompleted ? ' (Collected)' : ''}`}
         aria-disabled={!isCurrent || milestone.isCompleted}
       >
-        <img src={milestone.imageUrl} alt={milestone.title} className="absolute top-0 left-0 w-full h-full object-cover" />
+    <div className="absolute inset-0 w-full h-full bg-pk-yellow z-0" />
+    <img src={milestone.imageUrl} alt={milestone.title} className="relative z-10 w-full h-full object-contain" style={{backgroundColor: 'transparent'}} />
         <div className="holo-shine"></div>
         
         {milestone.isCompleted && (

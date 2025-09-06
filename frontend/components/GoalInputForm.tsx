@@ -38,9 +38,9 @@ const GoalInputForm: React.FC<GoalInputFormProps> = ({ onGeneratePlan, isLoading
   }, [onGeneratePlan, prompt, imageFile]);
 
   return (
-    <div className="w-full max-w-lg mx-auto animate-fade-in">
-        <div className="bg-pk-yellow p-2 rounded-2xl shadow-2xl border-4 border-pk-blue">
-             <div className="bg-white rounded-lg overflow-hidden">
+  <div className="w-full max-w-sm aspect-[5/7] mx-auto animate-fade-in flex flex-col justify-center">
+    <div className="bg-pk-yellow p-2 rounded-2xl shadow-2xl border-4 border-pk-blue flex-grow flex flex-col">
+       <div className="bg-white rounded-lg overflow-hidden flex-grow flex flex-col">
                 {/* Card Header */}
                 <div className="h-40 bg-pk-blue flex items-center justify-center text-center text-white relative overflow-hidden">
                     <div className="absolute -bottom-10 -right-8 w-32 h-32 bg-white/20 rounded-full"></div>

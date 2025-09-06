@@ -85,15 +85,16 @@ Structure your response by alternating between the text block (Title and Details
 const parseMilestonesFromParts = (parts) => {
   const milestones = [];
   let currentMilestone = {};
+  let lastText = '';
 
   for (const part of parts) {
     if (part.text) {
       const text = part.text.trim();
+      lastText = text;
       const titleMatch = text.match(/Title:([\s\S]*?)(?=Description:|$)/);
       if (titleMatch && titleMatch[1]) {
         currentMilestone.title = titleMatch[1].trim();
       }
-
       const descriptionMatch = text.match(/Description:([\s\S]*)/);
       if (descriptionMatch && descriptionMatch[1]) {
         currentMilestone.description = descriptionMatch[1].trim();
@@ -102,7 +103,11 @@ const parseMilestonesFromParts = (parts) => {
       currentMilestone.imageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
     }
 
-    if (currentMilestone.title && currentMilestone.description && currentMilestone.imageUrl) {
+    // Accept milestone if it has title and imageUrl, even if description is missing
+    if (currentMilestone.title && currentMilestone.imageUrl) {
+      if (!currentMilestone.description) {
+        currentMilestone.description = '(No description provided)';
+      }
       milestones.push(currentMilestone);
       currentMilestone = {};
     }
@@ -110,7 +115,14 @@ const parseMilestonesFromParts = (parts) => {
 
   if (milestones.length === 0) {
     console.error("Failed to parse parts from AI. Response parts:", JSON.stringify(parts, null, 2));
-    throw new Error("Could not parse the plan from the AI's response. Please try again.");
+    // Add fallback milestone for debugging
+    milestones.push({
+      title: 'Parsing Error',
+      description: 'Could not parse the plan from the AI. See server logs for details.',
+      imageUrl: '',
+      rawParts: parts,
+      lastText,
+    });
   }
 
   return milestones;

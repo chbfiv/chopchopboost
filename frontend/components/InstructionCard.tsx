@@ -7,7 +7,7 @@ interface InstructionCardProps {
 
 const InstructionCard: React.FC<InstructionCardProps> = ({ task }) => {
   return (
-    <div className="w-full max-w-sm aspect-[3/4.2] bg-pk-yellow p-2 rounded-2xl shadow-xl border-4 border-pk-blue">
+  <div className="w-full max-w-sm aspect-[5/7] bg-pk-yellow p-2 rounded-2xl shadow-xl border-4 border-pk-blue">
       <div className="w-full h-full bg-yellow-50 rounded-lg p-3 flex flex-col overflow-hidden">
         {/* Card Art */}
         <div className="w-full aspect-video rounded-lg overflow-hidden border-2 border-pk-blue/50">

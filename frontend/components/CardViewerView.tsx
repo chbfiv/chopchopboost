@@ -54,7 +54,7 @@ const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneInd
   }
   
   return (
-    <div className="w-full h-full max-w-md mx-auto flex flex-col animate-fade-in">
+  <div className="w-full h-full max-w-md mx-auto flex flex-col justify-center items-center animate-fade-in overflow-hidden">
       {/* Header removed, using TopBar breadcrumbs */}
 
       {isLoadingTasks && (
@@ -71,28 +71,25 @@ const CardViewerView: React.FC<CardViewerViewProps> = ({ milestone, milestoneInd
           </div>
       )}
 
-      {/* Card Swiper */}
+      {/* Card Swiper Only */}
       {!isLoadingTasks && milestone.tasks && milestone.tasks.length > 0 && (
         <>
-        <div ref={scrollContainerRef} className="flex-grow flex overflow-x-auto snap-x snap-mandatory scrollbar-hide">
-          {milestone.tasks.map((task, index) => (
-            <div key={index} className="flex-shrink-0 w-full snap-center flex items-center justify-center p-2">
-                <InstructionCard task={task} />
-            </div>
-          ))}
-        </div>
-        
-        {/* Progress & Navigation */}
-        <div className="flex flex-col items-center mt-4">
-            {currentCardIndex === milestone.tasks.length - 1 ? (
-                <button 
-                    onClick={handleRevealHero}
-                    className="mt-4 w-full max-w-xs py-3 px-8 text-pk-blue font-bold rounded-lg transition-all duration-300 ease-in-out bg-pk-yellow hover:bg-yellow-300 transform hover:scale-105 shadow-lg border-2 border-pk-blue"
-                >
-                    Reveal Holo Card!
-                </button>
-            ) : null}
-        </div>
+          <div ref={scrollContainerRef} className="flex-grow flex overflow-x-auto snap-x snap-mandatory scrollbar-hide items-center justify-center h-full">
+            {milestone.tasks.map((task, index) => (
+              <div key={index} className="flex-shrink-0 w-full snap-center flex items-center justify-center p-2 h-full">
+                  <InstructionCard task={task} />
+              </div>
+            ))}
+          </div>
+          {/* Dots Indicator */}
+          <div className="flex justify-center items-center mt-2 mb-2 gap-2">
+            {milestone.tasks.map((_, idx) => (
+              <span
+                key={idx}
+                className={`w-3 h-3 rounded-full transition-all duration-300 border border-pk-blue ${idx === currentCardIndex ? 'bg-pk-blue scale-125' : 'bg-yellow-200 opacity-60'}`}
+              />
+            ))}
+          </div>
         </>
       )}
     </div>

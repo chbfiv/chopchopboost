@@ -86,7 +86,16 @@ const BoosterPackList: React.FC<BoosterPackListProps> = ({ milestones, onMilesto
           );
         })}
       </div>
+    {/* Dots Indicator for Milestones */}
+    <div className="flex justify-center items-center mt-2 mb-2 gap-2">
+      {milestones.map((_, idx) => (
+        <span
+          key={idx}
+          className={`w-3 h-3 rounded-full transition-all duration-300 border border-white ${idx === currentIndex ? 'bg-white scale-125' : 'bg-white/40 opacity-60'}`}
+        />
+      ))}
     </div>
+  </div>
   );
 };
 

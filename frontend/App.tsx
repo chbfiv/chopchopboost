@@ -206,26 +206,30 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-between text-slate-800 dark:text-slate-200 p-4 font-sans bg-yellow-50 dark:bg-slate-900 transition-colors duration-300">
-      <TopBar
-        onCreateNewSeries={currentView !== 'home' ? handleStartOver : undefined}
-        breadcrumbs={getBreadcrumbs()}
-        onNavigateLeft={handleNavigateLeft}
-        onNavigateRight={handleNavigateRight}
-        showNavigation={currentView === 'series' || currentView === 'milestone'}
-        currentPosition={
-          currentView === 'series' && milestones ? `${boosterIndex + 1}/${milestones.length}` :
-          currentView === 'milestone' && milestones && selectedMilestoneIndex !== null && milestones[selectedMilestoneIndex].tasks ? 
-            `${currentCardIndex + 1}/${milestones[selectedMilestoneIndex].tasks!.length}` : 
-            undefined
-        }
-        currentView={currentView}
-        onBreadcrumbClick={handleBreadcrumbClick}
-      />
-      <main className="w-full max-w-4xl flex-grow flex flex-col items-center justify-center py-8">
+    <div className="h-screen w-screen flex flex-col items-center justify-between text-slate-800 dark:text-slate-200 font-sans bg-yellow-50 dark:bg-slate-900 transition-colors duration-300 overflow-hidden">
+      <div className="w-full flex-shrink-0">
+        <TopBar
+          onCreateNewSeries={currentView !== 'home' ? handleStartOver : undefined}
+          breadcrumbs={getBreadcrumbs()}
+          onNavigateLeft={handleNavigateLeft}
+          onNavigateRight={handleNavigateRight}
+          showNavigation={currentView === 'series' || currentView === 'milestone'}
+          currentPosition={
+            currentView === 'series' && milestones ? `${boosterIndex + 1}/${milestones.length}` :
+            currentView === 'milestone' && milestones && selectedMilestoneIndex !== null && milestones[selectedMilestoneIndex].tasks ? 
+              `${currentCardIndex + 1}/${milestones[selectedMilestoneIndex].tasks!.length}` : 
+              undefined
+          }
+          currentView={currentView}
+          onBreadcrumbClick={handleBreadcrumbClick}
+        />
+      </div>
+      <main className="flex-grow flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-2 md:px-8 py-2 md:py-8 overflow-hidden">
         {renderContent()}
       </main>
-      <Footer />
+      <div className="w-full flex-shrink-0">
+        <Footer />
+      </div>
     </div>
   );
 }
