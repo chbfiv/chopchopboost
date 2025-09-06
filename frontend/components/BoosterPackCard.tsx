@@ -83,7 +83,7 @@ const BoosterPackCard: React.FC<BoosterPackCardProps> = ({ milestone, index, cur
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onKeyPress={handleKeyPress}
-        className={`w-full h-full rounded-2xl shadow-xl overflow-hidden border-4 border-pk-blue/50 dark:border-pk-yellow/50 relative group transition-all duration-300
+        className={`w-full h-full rounded-2xl shadow-xl overflow-hidden relative group transition-all duration-300
           ${isCurrent ? (milestone.isCompleted ? 'cursor-default' : 'hover:shadow-2xl hover:border-pk-yellow dark:hover:border-pk-yellow') : 'cursor-default opacity-80'}
           ${milestone.isCompleted ? 'grayscale' : ''}
         `}
@@ -98,19 +98,6 @@ const BoosterPackCard: React.FC<BoosterPackCardProps> = ({ milestone, index, cur
         {milestone.isCompleted && (
            <div className="absolute top-3 right-3 font-bold text-xs text-pk-blue bg-pk-yellow rounded-full px-3 py-1 drop-shadow-lg border-2 border-pk-blue">COLLECTED</div>
         )}
-
-        <div className="absolute bottom-0 left-0 w-full h-2/5 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-4 flex flex-col justify-end text-center">
-          <h3 className="text-2xl font-bold text-white leading-tight drop-shadow-lg">
-              {milestone.title}
-          </h3>
-          <div className={`mt-2 font-bold text-lg rounded-lg px-4 py-1 transition-opacity duration-300
-            ${isCurrent ? 'opacity-100' : 'opacity-0'}
-          `}>
-             {milestone.isCompleted ? 
-                <span className="bg-pk-blue text-pk-yellow rounded-md px-4 py-1 border-2 border-pk-yellow/50">COLLECTED</span> : 
-                <span className="bg-pk-yellow text-pk-blue rounded-md px-4 py-1 border-2 border-pk-blue">OPEN BOOSTER</span>}
-          </div>
-        </div>
       </div>
     </div>
   );

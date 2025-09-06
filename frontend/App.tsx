@@ -4,7 +4,7 @@ import GoalInputForm from './components/GoalInputForm';
 import LoadingView from './components/LoadingView';
 import BoosterPackList from './components/BoosterPackList';
 import CardViewerView from './components/CardViewerView';
-import { Header } from './components/Header';
+import TopBar from './components/TopBar';
 import { Footer } from './components/Footer';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:3001' : '');
@@ -16,6 +16,8 @@ function App() {
   const [goalPrompt, setGoalPrompt] = useState<string>('');
   const [selectedMilestoneIndex, setSelectedMilestoneIndex] = useState<number | null>(null);
   const [isFetchingTasks, setIsFetchingTasks] = useState<boolean>(false);
+  const [currentView, setCurrentView] = useState<'home' | 'series' | 'milestone'>('home');
+  const [boosterIndex, setBoosterIndex] = useState<number>(0);
 
   const handleGeneratePlan = useCallback(async (prompt: string, imageFile: File | null) => {
     if (!prompt.trim()) {
@@ -43,6 +45,7 @@ function App() {
       }
       const generatedPlan = await response.json();
       setMilestones(generatedPlan);
+      setCurrentView('series');
     } catch (err) {
       console.error(err);
       setError(err instanceof Error ? err.message : "An unexpected error occurred. Please try again.");
@@ -58,6 +61,7 @@ function App() {
     if (selectedMilestone.isCompleted) return;
 
     setSelectedMilestoneIndex(index);
+    setCurrentView('milestone');
 
     if (selectedMilestone.tasks) {
       return;
@@ -95,6 +99,7 @@ function App() {
   const handleBackToList = () => {
     setSelectedMilestoneIndex(null);
     setError(null);
+    setCurrentView('series');
   };
 
   const handleMilestoneComplete = (index: number) => {
@@ -114,6 +119,37 @@ function App() {
     setGoalPrompt('');
     setSelectedMilestoneIndex(null);
     setIsFetchingTasks(false);
+    setCurrentView('home');
+    setBoosterIndex(0);
+  };
+
+  const getBreadcrumbs = () => {
+    const crumbs = ['Home'];
+    if (currentView === 'series') {
+      crumbs.push('Series');
+    } else if (currentView === 'milestone' && selectedMilestoneIndex !== null && milestones) {
+      crumbs.push('Series');
+      crumbs.push(`Milestone ${selectedMilestoneIndex + 1}`);
+    }
+    return crumbs;
+  };
+
+  const handleNavigateLeft = () => {
+    if (currentView === 'series' && milestones) {
+      setBoosterIndex(prev => Math.max(0, prev - 1));
+    } else if (currentView === 'milestone') {
+      // Navigate to previous task/card
+      // This would need to be implemented in CardViewerView
+    }
+  };
+
+  const handleNavigateRight = () => {
+    if (currentView === 'series' && milestones) {
+      setBoosterIndex(prev => Math.min(milestones.length - 1, prev + 1));
+    } else if (currentView === 'milestone') {
+      // Navigate to next task/card
+      // This would need to be implemented in CardViewerView
+    }
   };
 
   const renderContent = () => {
@@ -135,14 +171,26 @@ function App() {
       return <LoadingView />;
     }
     if (milestones) {
-      return <BoosterPackList milestones={milestones} onStartOver={handleStartOver} onMilestoneSelect={handleMilestoneSelect} />;
+      return <BoosterPackList 
+        milestones={milestones} 
+        onMilestoneSelect={handleMilestoneSelect}
+        currentIndex={boosterIndex}
+        onIndexChange={setBoosterIndex}
+      />;
     }
     return <GoalInputForm onGeneratePlan={handleGeneratePlan} isLoading={isLoading} error={error} />;
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between text-slate-800 dark:text-slate-200 p-4 font-sans bg-yellow-50 dark:bg-slate-900 transition-colors duration-300">
-      <Header />
+      <TopBar
+        onCreateNewSeries={currentView !== 'home' ? handleStartOver : undefined}
+        breadcrumbs={getBreadcrumbs()}
+        onNavigateLeft={currentView === 'series' ? handleNavigateLeft : undefined}
+        onNavigateRight={currentView === 'series' ? handleNavigateRight : undefined}
+        showNavigation={currentView === 'series'}
+        currentPosition={currentView === 'series' && milestones ? `${boosterIndex + 1}/${milestones.length}` : undefined}
+      />
       <main className="w-full max-w-4xl flex-grow flex flex-col items-center justify-center py-8">
         {renderContent()}
       </main>

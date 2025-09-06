@@ -44,7 +44,7 @@ Here are the rules for the Boosters:
 For EACH of the 3 Boosters:
 1.  Provide a short, epic title for the Booster, starting with "Title:".
 2.  Provide a concise, thematic description of what's inside, starting with "Description:".
-3.  Generate vibrant, exciting wrapper art for the Booster. The art should look like a real TCG booster pack with minimal to no text. For the final Booster, the art should be a beautiful representation of the completed goal: "${prompt}".
+3.  Generate vibrant, exciting wrapper art for the Booster. The art should look like a real TCG booster pack with minimal to no text. Use a solid black or white background so that the frontend can mask it out for transparency.
 
 Structure your response by alternating between text descriptions (Title and Description) and the corresponding generated image for each Booster.
   `;
@@ -75,7 +75,7 @@ Your job is to create the 3 collectible "Cards" found inside this Booster.
 For EACH of the 3 Cards:
 1.  Provide a clear, action-oriented title. Start this line with "Title:". (e.g., "Card: Gather Components", "Card: Assemble the Base").
 2.  Provide a numbered list of 2-3 simple, actionable details, like the rules text on a card. Start this section with "Details:".
-3.  Generate simple, clear, and thematic card art. The illustration should be a visual cue for the card's action, with minimal to no text.
+3.  Generate simple, clear, and thematic card art. The illustration should be a visual cue for the card's action, with minimal to no text. Use a solid black or white background so that the frontend can mask it out for transparency.
 
 Structure your response by alternating between the text block (Title and Details) and the corresponding generated image for each Card.
   `;
