@@ -1,5 +1,10 @@
 # Chop Chop Boost
 
+
+DEMO AT
+
+https://chopchopboost-53585612799.us-central1.run.app/
+
 Turn your goals into a Pokémon-style Trading Card Game! Define your 'Series', collect themed 'Boosters' for each milestone, and reveal powerful 'Cards' to master new skills. Test
 
 ## Project Structure
